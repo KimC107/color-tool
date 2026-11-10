@@ -1,0 +1,247 @@
+/* 配色工具：介面本身使用遊戲王國 a 組（鼠尾草＋奶油）配色，變數名稱與遊戲王國一致。
+   淺／深色預設跟隨系統；使用者按右上角按鈕可強制 <html data-mode="light|dark">。 */
+:root {
+  --bg: #F4F2EA;
+  --text: #2f3d34;
+  --muted: #7a8478;
+  --box: #FBFAF4;
+  --box-focus: #FFFFFF;
+  --box1: #E3ECF0;
+  --box1-focus: #F3F8FA;
+  --card-text: #2f3d34;
+  --card-muted: #7a8478;
+  --panel: #B5CDB0;
+  --panel-text: #25382b;
+  --soft: #D5E2C8;
+  --soft-text: #2f4a34;
+  --accent: #EBCB8B;
+  --accent-text: #4a3a14;
+  --ok: #3f7a4a;
+  --err: #b8453a;
+  --danger: #CF6339;
+  --blue: #4F7FB8;
+  --track: #8c9a88;
+  --on: #6FA27A;
+  --bead-n: #8a9486;
+}
+/* 深色：跟隨系統（除非使用者強制淺色） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    --bg: #1b221c;
+    --text: #ecebe0;
+    --muted: #b5c0b0;
+    --box: #DDE3D3;
+    --box-focus: #F0F3E8;
+    --box1: #C6D5DD;
+    --box1-focus: #E1ECF2;
+    --card-text: #1f2a21;
+    --card-muted: #55634f;
+    --panel: #86A483;
+    --panel-text: #14201a;
+    --soft: #A9C0A0;
+    --soft-text: #14201a;
+    --accent: #E3C47E;
+    --accent-text: #2e2410;
+    --ok: #CFE3A0;
+    --err: #ff9a8c;
+    --danger: #D9704A;
+    --blue: #4F7FB8;
+    --track: #4d5a4b;
+    --on: #7FB48A;
+    --bead-n: #6b7566;
+  }
+}
+/* 深色：使用者強制 */
+:root[data-mode="dark"] {
+  --bg: #1b221c;
+  --text: #ecebe0;
+  --muted: #b5c0b0;
+  --box: #DDE3D3;
+  --box-focus: #F0F3E8;
+  --box1: #C6D5DD;
+  --box1-focus: #E1ECF2;
+  --card-text: #1f2a21;
+  --card-muted: #55634f;
+  --panel: #86A483;
+  --panel-text: #14201a;
+  --soft: #A9C0A0;
+  --soft-text: #14201a;
+  --accent: #E3C47E;
+  --accent-text: #2e2410;
+  --ok: #CFE3A0;
+  --err: #ff9a8c;
+  --danger: #D9704A;
+  --blue: #4F7FB8;
+  --track: #4d5a4b;
+  --on: #7FB48A;
+  --bead-n: #6b7566;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", sans-serif;
+  padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left));
+}
+main { max-width: 720px; margin: 0 auto; padding: 16px 0 48px; }
+
+/* 頂部：標題卡＋淺深色切換 */
+.top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+h1 { flex: 1; font-size: 22px; margin: 0; background: var(--panel); color: var(--panel-text); padding: 12px 16px; border-radius: 16px; }
+
+/* ===== 共用元件 ===== */
+button {
+  -webkit-appearance: none; appearance: none; box-shadow: none;
+  font-family: inherit; font-size: 16px; padding: 12px 16px; border-radius: 12px; border: 0; cursor: pointer;
+  background: var(--accent); color: var(--accent-text); font-weight: 600;
+}
+button.secondary { background: var(--box); color: var(--card-text); font-weight: 500; }
+button.soft { background: var(--soft); color: var(--soft-text); }
+button.danger { background: var(--danger); color: #fff; }
+button.small { padding: 8px 12px; font-size: 14px; }
+button.wide { width: 100%; }
+
+.panel { background: var(--panel); color: var(--panel-text); padding: 16px; border-radius: 16px; }
+.grp { margin: 22px 0 8px; font-size: 15px; font-weight: 600; }
+.hint { margin: 10px 0; font-size: 13px; color: var(--muted); text-align: center; }
+.hint.left { text-align: left; }
+.actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.actions button { flex: 1; min-width: 120px; }
+
+/* 選項列（分頁、淺深色切換） */
+.seg { display: flex; gap: 8px; margin-bottom: 14px; }
+.seg button { flex: 1; padding: 12px 4px; font-size: 15px; background: var(--box); color: var(--card-text); }
+.seg button.on { background: var(--accent); color: var(--accent-text); }
+
+/* 文字輸入：字級 16px 以上，避免 iOS 自動放大 */
+input[type=text] {
+  -webkit-appearance: none; appearance: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 16px;
+  width: 100%; padding: 10px 12px; border: 0; border-radius: 12px; outline: none;
+  background: var(--box); color: var(--card-text);
+}
+input[type=text]:focus { background: var(--box-focus); }
+.fld { display: block; font-size: 13px; font-weight: 600; }
+.fld input[type=text] { margin-top: 4px; }
+
+/* ===== 分頁一：配色產生 ===== */
+.base-row { display: flex; gap: 12px; margin-bottom: 14px; }
+.big-swatch {
+  position: relative; flex: 1; min-height: 104px; border-radius: 12px; cursor: pointer;
+  display: flex; align-items: flex-end; padding: 10px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 18px; font-weight: 700;
+}
+/* 原生選色器蓋滿整個色塊，但看不見 */
+.big-swatch input[type=color], .dot input[type=color], .var-sw input[type=color] {
+  position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: 0; padding: 0;
+}
+.base-side { width: 132px; display: flex; flex-direction: column; gap: 8px; justify-content: space-between; }
+
+/* 滑桿：軌道用漸層顯示該軸的顏色變化（JS 設 --grad） */
+.sl { display: block; font-size: 13px; font-weight: 600; margin-top: 10px; }
+.sl output { font-weight: 400; opacity: .8; margin-left: 4px; }
+input[type=range] { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 28px; margin: 2px 0 0; background: transparent; outline: none; }
+input[type=range]::-webkit-slider-runnable-track { height: 12px; border-radius: 6px; background: var(--grad, var(--track)); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -7px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+input[type=range]::-moz-range-track { height: 12px; border-radius: 6px; background: var(--grad, var(--track)); }
+input[type=range]::-moz-range-thumb { width: 26px; height: 26px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+
+/* 一組配色 */
+.harm-row { background: var(--box); color: var(--card-text); border-radius: 16px; padding: 12px; margin-bottom: 12px; }
+.harm-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.harm-head b { flex: 1; font-size: 15px; }
+.sws { display: flex; gap: 6px; }
+.sw {
+  flex: 1; min-width: 0; height: 72px; padding: 0 2px 8px; border-radius: 10px;
+  display: flex; align-items: flex-end; justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 600;
+}
+
+/* ===== 分頁二：主題色卡 ===== */
+.presets { display: flex; gap: 8px; flex-wrap: wrap; }
+.preset { display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 14px; background: var(--box); color: var(--card-text); }
+.chips { display: flex; gap: 3px; }
+.chips i { display: block; width: 16px; height: 16px; border-radius: 50%; }
+
+.pair-row { display: flex; gap: 12px; margin-bottom: 12px; }
+.pair-row .fld { flex: 1; min-width: 0; }
+.pair { display: flex; gap: 6px; margin-top: 4px; }
+.pair input[type=text] { margin-top: 0; }
+.dot { position: relative; flex: none; width: 42px; border-radius: 12px; }
+
+/* 預覽：容器上用行內樣式覆寫 CSS 變數，所以裡面的元件會顯示「正在編輯的主題」而非工具本身的配色 */
+.pv-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .pv-wrap { grid-template-columns: 1fr; } }
+.pv-cap { margin: 0 0 4px; font-size: 13px; color: var(--muted); }
+.pv { background: var(--bg); color: var(--text); border-radius: 16px; padding: 14px; box-shadow: 0 0 0 1px rgba(128,128,128,.3); font-size: 14px; }
+.pv-title { background: var(--panel); color: var(--panel-text); border-radius: 12px; padding: 10px; text-align: center; font-weight: 700; font-size: 16px; }
+.pv-sub { color: var(--muted); font-size: 12px; text-align: center; margin: 6px 0 10px; }
+.pv-boxes { display: flex; gap: 6px; margin-bottom: 10px; }
+.pv-box { flex: 1; background: var(--box); color: var(--card-text); border-radius: 10px; padding: 8px; }
+.pv-box.b1 { background: var(--box1); }
+.pv-box small { display: block; color: var(--card-muted); font-size: 11px; }
+.pv-box .a { color: var(--danger); font-weight: 700; }
+.pv-box .b { color: var(--blue); font-weight: 700; }
+.pv-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.pv-btn { border-radius: 10px; padding: 9px 4px; text-align: center; font-weight: 600; font-size: 13px; background: var(--accent); color: var(--accent-text); }
+.pv-btn.soft { background: var(--soft); color: var(--soft-text); }
+.pv-btn.danger { background: var(--danger); color: #fff; }
+.pv-btn.sec { background: var(--box); color: var(--card-text); font-weight: 500; }
+.pv-ctl { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.pv-track { flex: 1; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--danger) 55%, var(--track) 55%); }
+.pv-switch { width: 38px; height: 22px; border-radius: 11px; background: var(--on); position: relative; }
+.pv-switch::after { content: ""; position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; }
+.pv-msg { margin: 8px 0 0; text-align: center; font-size: 13px; font-weight: 600; }
+.pv-msg.ok { color: var(--ok); }
+.pv-msg.err { color: var(--err); font-weight: 400; }
+
+/* 變數清單 */
+.vars { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 8px; }
+.var { display: flex; align-items: center; gap: 10px; background: var(--box); color: var(--card-text); border-radius: 12px; padding: 8px; min-width: 0; }
+.var-sw { position: relative; flex: none; width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 0 0 1px rgba(128,128,128,.3); }
+.var-info { min-width: 0; font-size: 12px; line-height: 1.35; }
+.var-info b { display: block; font-size: 13px; }
+.var-info code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--card-muted); }
+
+/* 對比度表 */
+.ct { background: var(--box); color: var(--card-text); border-radius: 16px; padding: 4px 12px; }
+.ct-row { display: grid; grid-template-columns: 1fr 108px 108px; gap: 8px; align-items: center; padding: 8px 0; font-size: 13px; }
+.ct-row + .ct-row { box-shadow: 0 -1px 0 rgba(128,128,128,.2); }
+.ct-row.head { font-weight: 600; color: var(--card-muted); }
+.ct-cell { display: flex; align-items: center; gap: 6px; }
+.ct-sample { flex: none; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; box-shadow: 0 0 0 1px rgba(128,128,128,.25); }
+.ct-num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.2; }
+.ct-num em { display: block; font-style: normal; font-weight: 700; font-family: inherit; }
+.ct-num em.good { color: #2f6b35; }
+.ct-num em.mid { color: #8a6412; }
+.ct-num em.bad { color: #b3402f; }
+@media (max-width: 420px) { .ct-row { grid-template-columns: 1fr 92px 92px; } }
+
+/* 匯出 */
+pre { margin: 10px 0 0; padding: 12px; border-radius: 12px; background: var(--box); color: var(--card-text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.5; max-height: 260px; overflow: auto; -webkit-user-select: text; user-select: text; }
+
+/* ===== 分頁三：收藏 ===== */
+.fav { background: var(--box); color: var(--card-text); border-radius: 16px; padding: 12px; margin-bottom: 12px; }
+.fav-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.fav-head b { flex: 1; font-size: 15px; word-break: break-all; }
+.fav-head span { font-size: 12px; color: var(--card-muted); flex: none; }
+.fav .sw { height: 56px; }
+.fav-actions { display: flex; gap: 6px; margin-top: 10px; }
+.fav-actions button { flex: 1; padding: 9px 4px; font-size: 14px; background: var(--soft); color: var(--soft-text); }
+.fav-actions button.del { background: transparent; color: var(--err); flex: none; padding: 9px 12px; }
+:root[data-mode="dark"] .fav-actions button.del { color: #b3402f; }
+@media (prefers-color-scheme: dark) { :root:not([data-mode="light"]) .fav-actions button.del { color: #b3402f; } }
+.empty { text-align: center; color: var(--muted); padding: 32px 0; font-size: 15px; line-height: 1.7; }
+
+/* ===== 彈窗與提示 ===== */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 10; }
+.modal-box { background: var(--panel); color: var(--panel-text); border-radius: 16px; padding: 22px; width: 100%; max-width: 320px; text-align: center; }
+.modal-box p { margin: 0 0 14px; font-size: 17px; font-weight: 600; }
+.modal-box input[type=text] { margin-bottom: 14px; font-family: inherit; }
+.modal-actions { display: flex; gap: 8px; }
+.modal-actions button { flex: 1; }
+.modal-box button.alt { background: var(--box); color: var(--card-text); }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 18px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 20; white-space: nowrap; }

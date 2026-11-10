@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>配色工具</title>
+  <!-- 狀態列顏色：由 app.js 依目前背景色更新 -->
+  <meta name="theme-color" content="#F4F2EA">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="配色">
+  <link rel="stylesheet" href="style.css">
+  <!-- 先套用上次選的淺／深色，避免畫面閃一下 -->
+  <script>
+    try {
+      var m = JSON.parse(localStorage.getItem('color-tool') || '{}').mode;
+      if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-mode', m);
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <main>
+    <header class="top">
+      <h1>配色工具</h1>
+      <button type="button" id="mode-btn" class="soft small" aria-label="切換淺色或深色">自動</button>
+    </header>
+
+    <!-- 分頁列 -->
+    <nav class="seg tabs" id="tabs">
+      <button type="button" data-tab="gen" class="on">配色產生</button>
+      <button type="button" data-tab="theme">主題色卡</button>
+      <button type="button" data-tab="fav">收藏</button>
+    </nav>
+
+    <!-- ========== 分頁一：配色產生 ========== -->
+    <section id="tab-gen">
+      <div class="panel">
+        <div class="base-row">
+          <label class="big-swatch" id="base-swatch" aria-label="點一下開啟選色器">
+            <input type="color" id="base-color">
+            <span id="base-hex-label"></span>
+          </label>
+          <div class="base-side">
+            <label class="fld">色碼
+              <input type="text" id="base-text" maxlength="7" autocomplete="off" autocapitalize="characters" spellcheck="false">
+            </label>
+            <button type="button" id="random-btn" class="secondary">隨機</button>
+          </div>
+        </div>
+        <label class="sl">色相 <output id="h-out"></output>
+          <input type="range" id="h-sl" min="0" max="360" step="1">
+        </label>
+        <label class="sl">飽和度 <output id="s-out"></output>
+          <input type="range" id="s-sl" min="0" max="100" step="1">
+        </label>
+        <label class="sl">明度 <output id="l-out"></output>
+          <input type="range" id="l-sl" min="0" max="100" step="1">
+        </label>
+      </div>
+      <p class="hint">點色塊可複製色碼</p>
+      <div id="harm"></div>
+    </section>
+
+    <!-- ========== 分頁二：主題色卡 ========== -->
+    <section id="tab-theme" hidden>
+      <p class="grp">從遊戲王國配色開始</p>
+      <div class="presets" id="presets"></div>
+
+      <p class="grp">或用兩個顏色產生</p>
+      <div class="panel">
+        <div class="pair-row">
+          <label class="fld">主色（卡片）
+            <span class="pair">
+              <span class="dot"><input type="color" id="pri-color"></span>
+              <input type="text" id="pri-text" maxlength="7" autocomplete="off" autocapitalize="characters" spellcheck="false">
+            </span>
+          </label>
+          <label class="fld">強調色（按鈕）
+            <span class="pair">
+              <span class="dot"><input type="color" id="acc-color"></span>
+              <input type="text" id="acc-text" maxlength="7" autocomplete="off" autocapitalize="characters" spellcheck="false">
+            </span>
+          </label>
+        </div>
+        <button type="button" id="gen-theme-btn" class="wide">產生主題</button>
+      </div>
+
+      <p class="grp">預覽</p>
+      <div class="pv-wrap">
+        <div>
+          <p class="pv-cap">淺色</p>
+          <div class="pv" id="pv-light"></div>
+        </div>
+        <div>
+          <p class="pv-cap">深色</p>
+          <div class="pv" id="pv-dark"></div>
+        </div>
+      </div>
+
+      <p class="grp">調整個別顏色（點色塊修改）</p>
+      <div class="seg" id="edit-mode">
+        <button type="button" data-m="light" class="on">淺色</button>
+        <button type="button" data-m="dark">深色</button>
+      </div>
+      <div class="vars" id="vars"></div>
+
+      <p class="grp">對比度檢查（WCAG）</p>
+      <div class="ct" id="contrast"></div>
+      <p class="hint left">AAA ≥ 7、AA ≥ 4.5、大字 ≥ 3（只適合標題或粗體大字）、低於 3 為不足</p>
+
+      <p class="grp">匯出 CSS 變數</p>
+      <label class="fld">配色代號（選填，填了會輸出成 [data-theme="代號"]）
+        <input type="text" id="export-name" maxlength="20" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="例如 d">
+      </label>
+      <pre id="export-code"></pre>
+      <div class="actions">
+        <button type="button" id="copy-css-btn">複製 CSS</button>
+        <button type="button" id="save-theme-btn" class="soft">收藏這組主題</button>
+      </div>
+    </section>
+
+    <!-- ========== 分頁三：收藏 ========== -->
+    <section id="tab-fav" hidden>
+      <div id="fav-list"></div>
+      <p class="grp">備份</p>
+      <p class="hint left">收藏只存在這台裝置的瀏覽器裡。換裝置或清除瀏覽資料前，先匯出備份。</p>
+      <div class="actions">
+        <button type="button" id="backup-btn" class="secondary">匯出備份</button>
+        <button type="button" id="restore-btn" class="secondary">匯入備份</button>
+        <input type="file" id="restore-file" accept="application/json,.json" hidden>
+      </div>
+    </section>
+  </main>
+
+  <!-- 彈窗：內容由 app.js 動態填入 -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <p id="modal-title"></p>
+      <input type="text" id="modal-input" maxlength="30" autocomplete="off">
+      <div class="modal-actions">
+        <button type="button" id="modal-cancel" class="alt">取消</button>
+        <button type="button" id="modal-ok">確定</button>
+      </div>
+    </div>
+  </div>
+  <!-- 短暫提示訊息 -->
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
