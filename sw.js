@@ -1,5 +1,6 @@
 // Service Worker：快取靜態檔，離線可用。改檔案後請調高 CACHE 版本號，否則手機會看到舊版。
-var CACHE = 'color-tool-v1';
+var CACHE = 'color-tool-v2';
+var PREFIX = CACHE.replace(/\d+$/, '');   // 只清自己的舊版暫存（同網域還有遊戲王國等其他 App，不能動別人的）
 var FILES = [
   './', 'index.html', 'style.css', 'app.js',
   'manifest.webmanifest', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'
@@ -10,10 +11,10 @@ self.addEventListener('install', function (e) {
   self.skipWaiting();
 });
 
-// 清掉舊版本快取
+// 清掉「自己的」舊版本快取
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (keys) {
-    return Promise.all(keys.filter(function (k) { return k !== CACHE; })
+    return Promise.all(keys.filter(function (k) { return k.indexOf(PREFIX) === 0 && k !== CACHE; })
       .map(function (k) { return caches.delete(k); }));
   }));
   self.clients.claim();
